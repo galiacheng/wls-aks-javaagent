@@ -71,7 +71,7 @@ After the deployment finishes, open the Application Insight instance, from **Ove
         WLS_DOMAIN_NS=sample-domain1-ns
         WLS_DOMAIN_UID=sample-domain1
         APPLICATIONINSIGHTS_CONNECTION_STRING="InstrumentationKey=xxxxxx"
-        AGENT_PATH="-javaagent=/shared/libs/applicationinsights-agent-3.4.7.jar"
+        AGENT_PATH="-javaagent:/shared/libs/applicationinsights-agent-3.4.7.jar"
 
         JAVA_OPTIONS=$(kubectl -n ${WLS_DOMAIN_NS} get domain ${WLS_DOMAIN_UID} -o json | jq '. | .spec.serverPod.env | .[] | select(.name=="JAVA_OPTIONS") | .value' | tr -d "\"")
         JAVA_OPTIONS="${AGENT_PATH} ${JAVA_OPTIONS}"
