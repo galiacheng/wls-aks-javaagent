@@ -117,3 +117,6 @@ After the deployment finishes, open the Application Insight instance, from **Ove
 
         kubectl get pod -n ${WLS_DOMAIN_NS} -w
         ```
+3. Now, you are able to access metrics of WLS from application insight.
+
+    ![Application Insight](resources/screenshot_app-insightpng.png)
