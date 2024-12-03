@@ -65,7 +65,7 @@ After the deployment finishes, open the Application Insight instance, from **Ove
         az account set --subscription <your-sub-id>
         az aks get-credentials --resource-group <aks-resource-group> --name <aks-name>
         ```
-    * Run the following commands to connect to Application Insights. Replace the `APPLICATIONINSIGHTS_CONNECTION_STRING` with your value.
+    * Run the following commands to connect to Application Insights. Replace the `APPLICATIONINSIGHTS_CONNECTION_STRING` with your value. Here, we add env variable `NODEMGR_JAVA_OPTIONS` to pass java agent exclusively to the server process. Otherwise, the node manager process and server process share the `JAVA_OPTIONS`.
 
         ```bash
         WLS_DOMAIN_NS=sample-domain1-ns
@@ -74,6 +74,7 @@ After the deployment finishes, open the Application Insight instance, from **Ove
         AGENT_PATH="-javaagent:/shared/libs/applicationinsights-agent-3.4.7.jar"
 
         JAVA_OPTIONS=$(kubectl -n ${WLS_DOMAIN_NS} get domain ${WLS_DOMAIN_UID} -o json | jq '. | .spec.serverPod.env | .[] | select(.name=="JAVA_OPTIONS") | .value' | tr -d "\"")
+        NODEMGR_JAVA_OPTIONS="${JAVA_OPTIONS}"
         JAVA_OPTIONS="${AGENT_PATH} ${JAVA_OPTIONS}"
 
         JAVA_OPTIONS_INDEX=$(kubectl -n ${WLS_DOMAIN_NS} get domain ${WLS_DOMAIN_UID} -o json  | jq '.spec.serverPod.env | map(.name == "JAVA_OPTIONS") | index(true)')
@@ -106,6 +107,14 @@ After the deployment finishes, open the Application Insight instance, from **Ove
                 "value": {
                     "name": "JAVA_OPTIONS",
                     "value": "${JAVA_OPTIONS}"
+                }
+            },
+            {
+                "op": "add",
+                "path": "/spec/serverPod/env/-",
+                "value": {
+                    "name": "NODEMGR_JAVA_OPTIONS",
+                    "value": "${NODEMGR_JAVA_OPTIONS}"
                 }
             }
         ]
